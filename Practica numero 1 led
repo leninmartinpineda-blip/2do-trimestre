@@ -1,0 +1,27 @@
+#include <WiFi.h>
+#include <ThingerESP32.h>
+
+/* ========= THINGER.IO ========= */
+
+#define NOMBRE DE USUARIO "AnthonyTabo"
+#define ID_DISPOSITIVO "esp32_led"
+#define CREDENCIAL_DISPOSITIVO "123456"
+/* ========= WIFI ========= /
+#define SSID "InfinixGt"
+#define CONTRASEÑA_SSID "cacota12345678" // Reemplaza por tu clave
+/ ========= LED ========= */
+#define LED_PIN 2 // LED interno del ESP32 (GPIO2)
+ThingerESP32 thing(NOMBRE DE USUARIO, ID_DISPOSITIVO, CREDENCIAL_DISPOSITIVO);
+void setup() {
+Serial.begin(115200);
+delay(1000);
+pinMode(LED_PIN, OUTPUT);
+digitalWrite(LED_PIN, LOW);
+thing.add_wifi(SSID, SSID_PASSWORD);
+// Recurso para control desde Thinger (Switch)
+thing["led"] << digitalPin(LED_PIN);
+Serial.println("ESP32 iniciado. Revisa Thinger.io (ONLINE).");
+}
+void loop() {
+thing.handle();
+}
