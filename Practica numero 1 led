@@ -7,7 +7,7 @@
 #define ID_DISPOSITIVO "esp32_led"
 #define CREDENCIAL_DISPOSITIVO "123456"
 /* ========= WIFI ========= /
-#define SSID "InfinixGt"
+#define SSID "honor200lite"
 #define CONTRASEÑA_SSID "cacota12345678" // Reemplaza por tu clave
 / ========= LED ========= */
 #define LED_PIN 2 // LED interno del ESP32 (GPIO2)
