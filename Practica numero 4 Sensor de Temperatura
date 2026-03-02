@@ -1,0 +1,59 @@
+desde umqtt.simple importar MQTTClient
+importar red
+importar tiempo
+desde máquina importar Pin
+desde dht importar DHT11
+
+---------------- WIFI ----------------
+ssid = 'Pineda'
+contraseña = 'cacota12345678'
+
+wifi = red.WLAN(red.STA_IF)
+wifi.activo(Verdadero)
+wifi.conectar(ssid, contraseña)
+
+mientras no esté wifi.isconnected():
+time.sleep(0.5)
+
+print("WiFi conectado")
+
+--------------- COSA ---------------
+USUARIO = 'Pineda'
+DISPOSITIVO = 'proyectoS'
+CONTRASEÑA_DISPOSITIVO = 'tX9zZ9+o04QvH'
+SERVIDOR = 'backend.thinger.io'
+PUERTO = 1883 # SIN SSL
+
+--------------- DHT -------------------
+dht = DHT11(Pin(23))
+
+def read_dht():
+dht.medida()
+devuelve dht.temperatura(), dht.humedad()
+
+--------------- MQTT ------------------
+cliente = MQTTClient(
+cliente_id=DISPOSITIVO,
+servidor=SERVIDOR,
+puerto=PUERTO,
+usuario=USUARIO,
+contraseña=CONTRASEÑA_DISPOSITIVO,
+keepalive=60
+)
+
+client.connect()
+print("Conectado a Thinger.io")
+
+Tema correcto
+tema = 'v1/usuarios/{}/dispositivos/{}/datos/DHT11'.formato(USUARIO, DISPOSITIVO)
+
+--------------- BUCLE ------------------
+mientras sea verdadero:
+temp, hum = read_dht()
+
+payload = '{{"temperature":{}, "humidity":{}}}'.format(temp, hum)
+
+client.publish(topic, payload)
+print("Enviado:", payload)
+
+time.sleep(10)
