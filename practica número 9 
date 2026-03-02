@@ -1,0 +1,26 @@
+#include <WiFi.h>
+#include <ThingerESP32.h>
+
+#define USERNAME "TU_USUARIO"
+#define DEVICE_ID "TU_DEVICE"
+#define DEVICE_CREDENTIAL "TU_CREDENCIAL"
+
+#define SSID "TU_WIFI"
+#define PASSWORD "TU_PASSWORD"
+
+#define RELE 15
+
+ThingerESP32 thing(USERNAME, DEVICE_ID, DEVICE_CREDENTIAL);
+
+void setup() {
+pinMode(RELE, OUTPUT);
+digitalWrite(RELE, LOW);
+
+thing.add_wifi(SSID, PASSWORD);
+
+thing["Foco"] << digitalPin(RELE);
+}
+
+void loop() {
+thing.handle();
+}
