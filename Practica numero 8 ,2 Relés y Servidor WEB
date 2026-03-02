@@ -1,0 +1,140 @@
+==============================
+SERVIDOR WEB ESP32 - 3 RELÉS
+==============================
+importar red
+importar socket
+importar tiempo
+desde la máquina importar Pin
+
+==============================
+Wi-Fi
+==============================
+SSID = "honor200lite"
+CONTRASEÑA = "cacota12345678"
+
+print("Conectando a", SSID)
+
+wifi = red.WLAN(red.STA_IF)
+wifi.activo(Falso)
+tiempo.sueño(1)
+wifi.activo(Verdadero)
+wifi.desconectar()
+tiempo.sueño(1)
+
+wifi.connect(SSID, CONTRASEÑA)
+
+mientras no wifi.isconnected():
+time.sleep(0.5)
+print(".")
+
+print("WiFi conectada!")
+ip = wifi.ifconfig()[0]
+print("Dirección IP:", ip)
+
+==============================
+RELÉS (ACTIVOS EN LOW)
+==============================
+rele26 = Pin(26, Pin.SALIDA)
+rele27 = Pin(27, Pin.SALIDA)
+rele15 = Pin(15, Pin.SALIDA)
+
+Estado inicial APAGADO (ALTO)
+rele26.valor(1)
+rele27.valor(1)
+rele15.valor(1)
+
+estado26 = "apagado"
+estado27 = "apagado"
+estado15 = "apagado"
+
+==============================
+SERVIDOR WEB
+==============================
+addr = socket.getaddrinfo('0.0.0.0', 80)[0][-1]
+servidor = socket.socket()
+servidor.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+servidor.bind(addr)
+servidor.listen(1)
+
+print("Servidor iniciado en", ip)
+
+==============================
+PRINCIPAL DE BUCLE
+==============================
+mientras True:
+cliente, dirección = servidor.accept()
+print("Nuevo cliente:", dirección)
+
+request = client.recv(1024).decode()
+print(request)
+
+# RELÉ 26
+if "GET /26/on" in request:
+    rele26.value(0)
+    estado26 = "on"
+    print("FOCO 26 ENCENDIDO")
+
+if "GET /26/off" in request:
+    rele26.value(1)
+    estado26 = "off"
+    print("FOCO 26 APAGADO")
+
+# RELÉ 27
+if "GET /27/on" in request:
+    rele27.value(0)
+    estado27 = "on"
+    print("FOCO 27 ENCENDIDO")
+
+if "GET /27/off" in request:
+    rele27.value(1)
+    estado27 = "off"
+    print("FOCO 27 APAGADO")
+
+# RELÉ 15
+if "GET /15/on" in request:
+    rele15.value(0)
+    estado15 = "on"
+    print("FOCO 15 ENCENDIDO")
+
+if "GET /15/off" in request:
+    rele15.value(1)
+    estado15 = "off"
+    print("FOCO 15 APAGADO")
+
+# ==============================
+# HTML
+# ==============================
+html = """<!DOCTYPE html>
+<style> html { font-family: Helvetica; text-align: center;} .button { background-color: #4CAF50; border: none; color: white; padding: 16px 40px; text-decoration: none; font-size: 25px; margin: 10px; cursor: pointer;} .button2 { background-color: #f44336;} </style>
+CONTROL DE 3 FOCOS - MECATRONICA
+"""
+# FOCO 26
+html += "<p>FOCO 26 - Estado: " + estado26 + "</p>"
+if estado26 == "off":
+    html += '<a href="/26/on"><button class="button">ENCENDER</button></a>'
+else:
+    html += '<a href="/26/off"><button class="button button2">APAGAR</button></a>'
+
+# FOCO 27
+html += "<p>FOCO 27 - Estado: " + estado27 + "</p>"
+if estado27 == "off":
+    html += '<a href="/27/on"><button class="button">ENCENDER</button></a>'
+else:
+    html += '<a href="/27/off"><button class="button button2">APAGAR</button></a>'
+
+# FOCO 15
+html += "<p>FOCO 15 - Estado: " + estado15 + "</p>"
+if estado15 == "off":
+    html += '<a href="/15/on"><button class="button">ENCENDER</button></a>'
+else:
+    html += '<a href="/15/off"><button class="button button2">APAGAR</button></a>'
+
+html += "</body></html>"
+
+client.send("HTTP/1.1 200 OK\r\n")
+client.send("Content-Type: text/html\r\n")
+client.send("Connection: close\r\n\r\n")
+client.sendall(html)
+client.close()
+
+print("Cliente desconectado\n")
