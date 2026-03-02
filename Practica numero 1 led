@@ -3,7 +3,7 @@
 
 /* ========= THINGER.IO ========= */
 
-#define NOMBRE DE USUARIO "AnthonyTabo"
+#define NOMBRE DE USUARIO "Pineda"
 #define ID_DISPOSITIVO "esp32_led"
 #define CREDENCIAL_DISPOSITIVO "123456"
 /* ========= WIFI ========= /
