@@ -1,2 +1,0 @@
-# 2do-trimestre
-codigos
